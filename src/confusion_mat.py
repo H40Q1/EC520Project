@@ -7,7 +7,6 @@ class ConfMat:
         self.resMat = self.computeImg()  # 7*(4n) matrix
         self.tpr, self.fpr = self.computeROC()
 
-
     def computeImg(self):
         # 1) initalize resMat
         # in this case n = 4, so:
@@ -29,7 +28,7 @@ class ConfMat:
         for i in range(1, 11):
             diff = Difference(ori, imgList[i])
             diffList = diff.res  # list of diffs (size 7)
-            for j in range(diffList):
+            for j in range(len(diffList)):
                 for k in range(4):
                     if diffList[j] <= self.threshold[j][k] and i<6:
                         resMat[j][4 * k ] += 1  # TP
