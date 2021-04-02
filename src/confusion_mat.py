@@ -14,7 +14,7 @@ class ConfMat:
         #  each row comprises n confusion matrices for 7 thresholds
         #  totally 7 rows, one row for each difference
         # each confusion matrix sum up to 10 times of total number of images
-        resMat = [0 for _ in range(self.n * 4)] * 7  # 7*(4n) matrix
+        resMat = [[0]*(self.n*4) for _ in range(7)]  # 7*(4n) matrix
 
         # 2) load data,
         # iteratively get image list (size 11) from ..
@@ -40,7 +40,7 @@ class ConfMat:
                         resMat[j][4 * k + 3] += 1  # TN
 
     def computeROC(self):
-        tpr, fpr = [0 for _ in range(self.n)] * 7, [0 for _ in range(self.n)] * 7
+        tpr, fpr = [[0]*self.n for _ in range(7)], [[0]*self.n for _ in range(7)]
         # 7*n matrix
         n = self.n
         for i in range(len(self.resMat)):
