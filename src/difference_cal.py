@@ -22,8 +22,10 @@ class Difference:
         self.hau_diff = self.hausdorff()  # Difference 5: Hausdorff Distance
         self.cos_diff = self.cosine()  # **Difference 6: Cosine similarity
         self.ssim_diff = self.ssim_measure()  # **Difference 7: SSIM
+        # store in list
+        self.res = [self.img_diff, self.rgb_hist, self.hsv_hist, self.hog_diff, self.hau_diff, self.cos_diff, self.ssim_diff]
 
-        self.inv_diff = self.invariant()  # Difference 7: Invariant Movement (?
+#         self.inv_diff = self.invariant()  # Difference 7: Invariant Movement (?
 
     def image_difference(self):  # 1
         d = np.sum(abs(self.img1 - self.img2)) / (self.channel * self.width * self.height)
