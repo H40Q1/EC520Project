@@ -46,8 +46,8 @@ class ConfMat:
         for i in range(len(self.resMat)):
             for j in range(self.n):
                 # index order : tp, fp, fn, tn
-                tpr[i][j] = self.resMat[i][4*n] / (self.resMat[i][4*n] + self.resMat[i][4*n+2])  # tpr = tp/(tp+fn)
-                fpr[i][j] = self.resMat[i][4*n+1] / (self.resMat[i][4*n+1] + self.resMat[i][4*n+3])  # fpr = fp/(fp+tn)
+                tpr[i][j] = self.resMat[i][4*j] / (self.resMat[i][4*j] + self.resMat[i][4*j+2])  # tpr = tp/(tp+fn)
+                fpr[i][j] = self.resMat[i][4*j+1] / (self.resMat[i][4*j+1] + self.resMat[i][4*j+3])  # fpr = fp/(fp+tn)
 
         return tpr, fpr
 
