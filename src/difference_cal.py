@@ -6,7 +6,8 @@ import numpy as np
 import SimpleITK as sitk
 import math
 from PIL import Image
-from skimage.measure import compare_ssim
+#from skimage.measure import compare_ssim#for skimage=0.17.x
+from skimage.metrics import structural_similarity#for skimage=0.18.x
 
 
 class Difference:
@@ -22,8 +23,10 @@ class Difference:
         self.hau_diff = self.hausdorff()  # Difference 5: Hausdorff Distance
         self.cos_diff = self.cosine()  # **Difference 6: Cosine similarity
         self.ssim_diff = self.ssim_measure()  # **Difference 7: SSIM
+        # store in list
+        self.res = [self.img_diff, self.rgb_hist, self.hsv_hist, self.hog_diff, self.hau_diff, self.cos_diff, self.ssim_diff]
 
-        self.inv_diff = self.invariant()  # Difference 7: Invariant Movement (?
+#         self.inv_diff = self.invariant()  # Difference 7: Invariant Movement (?
 
     def image_difference(self):  # 1
         d = np.sum(abs(self.img1 - self.img2)) / (self.channel * self.width * self.height)
@@ -93,17 +96,22 @@ class Difference:
         return d
 
     def hausdorff(self):  # 5
-        edges1 = cv2.Canny(self.img1, 25, 255, L2gradient=False)
-        edges2 = cv2.Canny(self.img2, 25, 255, L2gradient=False)
-        label1 = sitk.GetImageFromArray(edges1, isVector=False)
-        label2 = sitk.GetImageFromArray(edges2, isVector=False)
+        # edges1 = cv2.Canny(self.img1, 25, 255, L2gradient=False)
+        # edges2 = cv2.Canny(self.img2, 25, 255, L2gradient=False)
+        # #Using sitk
+        # label1 = sitk.GetImageFromArray(edges1, isVector=False)
+        # label2 = sitk.GetImageFromArray(edges2, isVector=False)
+        # hausdorffcomputer = sitk.HausdorffDistanceImageFilter()  # does it need to be replaced by avgHausdorff?
+        # hausdorffcomputer.Execute(label1 > 0.5, label2 > 0.5)
+        # d = hausdorffcomputer.GetHausdorffDistance()
 
-        hausdorffcomputer = sitk.HausdorffDistanceImageFilter()  # does it need to be replaced by avgHausdorff?
-        hausdorffcomputer.Execute(label1 > 0.5, label2 > 0.5)
+        # #Using cv2.hausdorff
+        # # hausdorff_sd = cv2.createHausdorffDistanceExtractor()
+        # # d = hausdorff_sd.computeDistance(edges1, edges2)
 
-        d = hausdorffcomputer.GetHausdorffDistance()
-        d /= math.sqrt(self.width ^ 2 + self.height ^ 2)  # normalize: divided by the diagonal distance
-        return round(d, 3)
+        # d /= math.sqrt(self.width ^ 2 + self.height ^ 2)  # normalize: divided by the diagonal distance
+        # return round(d, 3)
+        return 1
 
     def cosine(self):  # 6
         img1 = Image.fromarray(cv2.cvtColor(self.img1, cv2.COLOR_BGR2RGB))
@@ -126,7 +134,8 @@ class Difference:
         return round(d, 6)
 
     def ssim_measure(self):  # 7
-        ssim = compare_ssim(self.img1, self.img2, multichannel=True)
+        #ssim = compare_ssim(self.img1, self.img2, multichannel=True)#for skimage=0.17.x
+        ssim = structural_similarity(self.img1, self.img2, multichannel=True)#for skimage=0.18.x
         d = 1 - ssim
         return round(d, 3)
 
@@ -162,3 +171,4 @@ class Difference:
         x = u20 + u02
         y = math.sqrt((u20 - u02) ** 2 + 4 * u11)
         return x, y
+
