@@ -19,13 +19,11 @@ class Difference:
         self.rgb_hist = self.rgb_histogram()  # Difference 2: RGB histogram (16 bins)
         self.hsv_hist = self.hsv_histogram()  # Difference 3: HSV histogram (16+8+4 bins)
         self.hog_diff = self.hog_difference()  # Difference 4: Gradient Direction histogram (18 bins)
-        self.hau_diff = self.hausdorff()  # Difference 5: Hausdorff Distance
-        self.cos_diff = self.cosine()  # **Difference 6: Cosine similarity
-        self.ssim_diff = self.ssim_measure()  # **Difference 7: SSIM
+        self.cos_diff = self.cosine()  # **Difference 5: Cosine similarity
+        self.ssim_diff = self.ssim_measure()  # **Difference 6: SSIM
         # store in list
-        self.res = [self.img_diff, self.rgb_hist, self.hsv_hist, self.hog_diff, self.hau_diff, self.cos_diff, self.ssim_diff]
+        self.res = [self.img_diff, self.rgb_hist, self.hsv_hist, self.hog_diff, self.cos_diff, self.ssim_diff]
 
-#         self.inv_diff = self.invariant()  # Difference 7: Invariant Movement (?
 
     def image_difference(self):  # 1
         d = np.sum(abs(self.img1 - self.img2)) / (self.channel * self.width * self.height)
@@ -94,19 +92,6 @@ class Difference:
         d = 1 - tot / (self.width * self.height)
         return d
 
-    def hausdorff(self):  # 5
-        edges1 = cv2.Canny(self.img1, 25, 255, L2gradient=False)
-        edges2 = cv2.Canny(self.img2, 25, 255, L2gradient=False)
-        label1 = sitk.GetImageFromArray(edges1, isVector=False)
-        label2 = sitk.GetImageFromArray(edges2, isVector=False)
-
-        hausdorffcomputer = sitk.HausdorffDistanceImageFilter()  # does it need to be replaced by avgHausdorff?
-        hausdorffcomputer.Execute(label1 > 0.5, label2 > 0.5)
-
-        d = hausdorffcomputer.GetHausdorffDistance()
-        d /= math.sqrt(self.width ^ 2 + self.height ^ 2)  # normalize: divided by the diagonal distance
-        return round(d, 3)
-
     def cosine(self):  # 6
         img1 = Image.fromarray(cv2.cvtColor(self.img1, cv2.COLOR_BGR2RGB))
         img2 = Image.fromarray(cv2.cvtColor(self.img2, cv2.COLOR_BGR2RGB))
@@ -132,35 +117,6 @@ class Difference:
         d = 1 - ssim
         return round(d, 3)
 
-    """
-    original methods 6 and 7...
-    """
 
-    def invariant(self):  # original 7 (may not use)
-        x1, y1 = self.inv(self.img1)
-        x2, y2 = self.inv(self.img2)
-        d = math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)  # this function is different from the one in paper
 
-        return round(d)  # too large, need normalize?
 
-    def inv(self, img):  # original 7 sub-method
-        edges = cv2.Canny(img, 25, 255, L2gradient=False)
-        totI, totJ, cnt = 0, 0, 0
-        # find the centroid of the edge
-        for i in range(edges.shape[0]):
-            for j in range(edges.shape[1]):
-                if edges[i, j] == 255:
-                    totI += i
-                    totJ += j
-                    cnt += 1
-        x_c, y_c = totI / cnt, totJ / cnt
-        u20, u02, u11 = 0, 0, 0
-        for i in range(edges.shape[0]):
-            for j in range(edges.shape[1]):
-                if edges[i, j] == 255:
-                    u20 += (i - x_c) ** 2
-                    u02 += (j - y_c) ** 2
-                    u11 += (i - x_c) * (j - y_c)
-        x = u20 + u02
-        y = math.sqrt((u20 - u02) ** 2 + 4 * u11)
-        return x, y
