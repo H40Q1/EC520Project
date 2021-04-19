@@ -20,21 +20,21 @@ class ConfMat:
         resMat = [[0]*(self.n*4) for _ in range(self.numDiff)]  # 6*(4n) matrix
 
         # 2) load data,
-        # for each img in 700 candidates img, compare it to 100 original img
+        # for each img in 300 candidates img, compare it to 50 original img
         # index i represents the index of candidate img
         # index j represents the index of original img each candidate img is comparing to
 
-        for i in range(700):
+        for i in range(300):
             # code here: get candidate img i
             ori = ...
 
             # code here: determine if candidate is a copy, if it is, find its source img index
-            if 0 <= i <= 499:
-                src_index = i//5   # 5 distortions for each src img
+            if 0 <= i < 200:
+                src_index = i//4   # 4 distortions for each src img
             else:
                 src_index = -1  # if not copy, assign src = -1
 
-            for j in range(100):  # comparing to all original imgs
+            for j in range(50):  # comparing to all original imgs
                 # code here: get original img j
                 candidate = ...
 
@@ -78,11 +78,3 @@ class ConfMat:
                 fpr[i][j] = self.resMat[i][4*j+1] / (self.resMat[i][4*j+1] + self.resMat[i][4*j+3])  # fpr = fp/(fp+tn)
 
         return tpr, fpr
-
-
-
-
-
-
-
-
