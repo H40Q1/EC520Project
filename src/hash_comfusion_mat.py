@@ -20,7 +20,7 @@ class ConfMat:
         resMat = [[0]*(self.n*4) for _ in range(self.numDiff)]  # 3*(4n) matrix
 
         # 2) load data,
-        # for each img in 700 candidates img, compare it to 100 original img
+        # for each img in 300 candidates img, compare it to 50 original img
         # index i represents the index of candidate img
         # index j represents the index of original img each candidate img is comparing to
 
